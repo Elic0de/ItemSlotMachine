@@ -34,6 +34,7 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
     int lockTime;
     String[] winCommands;
     SoundInfo[] spinSounds;
+    SoundInfo[] spinningSounds;
     SoundInfo[] winSounds;
     SoundInfo[] loseSounds;
     boolean moneyPotEnabled;
@@ -41,6 +42,8 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
     double moneyPotRaise;
     double moneyPotHouseCut;
     boolean itemPotEnabled;
+    boolean renchan;
+    double renchanChance;
     ItemStack[] itemPotDefault;
     ItemStack[] itemPotRaise;
     Combo[] combos;
@@ -97,6 +100,7 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
         }
 
         spinSounds = convertSounds(Setting.SOUNDS_SPIN);
+        spinningSounds = convertSounds(Setting.SOUNDS_SPINNING);
         winSounds = convertSounds(Setting.SOUNDS_WIN);
         loseSounds = convertSounds(Setting.SOUNDS_LOSE);
 
@@ -129,6 +133,14 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
             itemPotDefault = new ItemStack[0];
             itemPotRaise = new ItemStack[0];
         }
+
+        renchan = config.getBoolean(Setting.RENCHAN.getPath());
+        if (renchan) {
+            renchanChance = config.getDouble(Setting.RENCHAN_CHANCE.getPath());
+        } else {
+            renchanChance = 0.0;
+        }
+
 
         if (!moneyPotEnabled && !itemPotEnabled) {
             throw new InvalidValueException("At least one pot has to be enabled.");

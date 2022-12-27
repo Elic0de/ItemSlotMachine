@@ -12,6 +12,7 @@ public enum Setting {
     LOCK_TIME("lock-time"),
     WIN_COMMANDS("win-commands"),
     SOUNDS_SPIN("sounds.spin"),
+    SOUNDS_SPINNING("sounds.spinning"),
     SOUNDS_WIN("sounds.win"),
     SOUNDS_LOSE("sounds.lose"),
     MONEY_POT_ENABLED("money-pot.enabled"),
@@ -21,6 +22,8 @@ public enum Setting {
     ITEM_POT_ENABLED("item-pot.enabled"),
     ITEM_POT_DEFAULT("item-pot.default"),
     ITEM_POT_RAISE("item-pot.raise"),
+    RENCHAN("renchan.enabled"),
+    RENCHAN_CHANCE("renchan.chance"),
     COMBOS("combos");
 
     private String path;

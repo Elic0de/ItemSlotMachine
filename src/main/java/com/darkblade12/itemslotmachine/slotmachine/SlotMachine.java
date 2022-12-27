@@ -86,6 +86,8 @@ public final class SlotMachine implements Nameable {
     private transient boolean spinning;
     private transient boolean stopped;
 
+    private double renchanChance;
+
     private SlotMachine(ItemSlotMachine plugin, String name, Design design, SafeLocation buildLocation,
                         Direction buildDirection) {
         this.plugin = plugin;
@@ -149,6 +151,15 @@ public final class SlotMachine implements Nameable {
         }
     }
 
+    private void stopSounds(SoundInfo[] sounds) {
+        Player user = getUser();
+        for (SoundInfo sound : sounds) {
+            if (user != null) {
+                sound.stop(user);
+            }
+        }
+    }
+
     private boolean isWin(Material[] pattern) {
         if (pattern[0] == pattern[1] && pattern[1] == pattern[2]) {
             return true;
@@ -169,7 +180,7 @@ public final class SlotMachine implements Nameable {
 
     private Material[] generatePattern() {
         if (settings.winningChance > 0) {
-            boolean forceWin = RANDOM.nextDouble() * 100 <= settings.winningChance;
+            boolean forceWin = renchanChance == 0.0 ? RANDOM.nextDouble() * 100 <= settings.winningChance : RANDOM.nextDouble() * 100 <= renchanChance;
             List<Material> pool1 = Lists.newArrayList(settings.symbolTypes);
             while (pool1.size() > 0) {
                 Material[] pattern = new Material[3];
@@ -234,6 +245,9 @@ public final class SlotMachine implements Nameable {
         }
 
         final Material[] result = generatePattern();
+
+        playSounds(settings.spinningSounds);
+
         task = new BukkitRunnable() {
             private int spins = 0;
             private int stoppedAt = -1;
@@ -261,7 +275,6 @@ public final class SlotMachine implements Nameable {
                         for (int j = 0; j < frames.length; j++) {
                             pattern[j] = frames[j].getItem().getType();
                         }
-
                         endSpin(pattern);
                     }
                 }
@@ -278,6 +291,7 @@ public final class SlotMachine implements Nameable {
         List<String> commands = new ArrayList<>();
         boolean payOutMoneyPot = false;
         boolean payOutItemPot = false;
+        boolean renchan = false;
         for (Combo combo : settings.combos) {
             if (!combo.isActivated(pattern)) {
                 continue;
@@ -325,6 +339,7 @@ public final class SlotMachine implements Nameable {
         if (pattern[0] == pattern[1] && pattern[1] == pattern[2]) {
             payOutMoneyPot = true;
             payOutItemPot = true;
+            renchan = true;
         }
 
         if (payOutMoneyPot && isMoneyPotEnabled()) {
@@ -334,6 +349,10 @@ public final class SlotMachine implements Nameable {
         if (payOutItemPot && settings.itemPotEnabled) {
             ItemUtils.stackItems(itemPrize, itemPot);
             resetItemPot();
+        }
+
+        if (renchan && settings.renchan) {
+            renchanChance = settings.renchanChance;
         }
 
         if (moneyPrize == 0 && itemPrize.size() == 0 && commands.size() == 0) {
@@ -354,6 +373,8 @@ public final class SlotMachine implements Nameable {
             if (user != null) {
                 plugin.sendMessage(user, Message.SLOT_MACHINE_LOST);
             }
+
+            renchanChance = 0.0;
         } else {
             commands.addAll(Arrays.asList(settings.winCommands));
             payOut(moneyPrize, itemPrize, commands);
@@ -363,6 +384,7 @@ public final class SlotMachine implements Nameable {
             lockEnd = System.currentTimeMillis() + settings.lockTime * 1000;
         }
         spinning = false;
+        stopSounds(settings.spinningSounds);
     }
 
     private void payOut(double moneyPrize, List<ItemStack> itemPrize, List<String> commands) {

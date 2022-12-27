@@ -9,13 +9,13 @@ import java.util.regex.Pattern;
 
 public final class SoundInfo {
     private static final Pattern FORMAT = Pattern.compile("(?i)[a-z_]+(-\\d+(\\.\\d+)?){2}(-(true|false))?");
-    private final Sound sound;
+    private final String soundName;
     private final float volume;
     private final float pitch;
     private final boolean broadcast;
 
-    public SoundInfo(Sound sound, float volume, float pitch, boolean broadcast) {
-        this.sound = sound;
+    public SoundInfo(String soundName, float volume, float pitch, boolean broadcast) {
+        this.soundName = soundName;
         this.volume = volume;
         this.pitch = pitch;
         this.broadcast = broadcast;
@@ -27,9 +27,10 @@ public final class SoundInfo {
         }
 
         String[] data = text.split("-");
-        Sound sound;
+        String soundName;
+        //Sound sound;
         try {
-            sound = Sound.valueOf(data[0].toUpperCase());
+            soundName = data[0];
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid sound name.");
         }
@@ -49,7 +50,7 @@ public final class SoundInfo {
         }
 
         boolean broadcast = data.length <= 3 || Boolean.parseBoolean(data[3]);
-        return new SoundInfo(sound, volume, pitch, broadcast);
+        return new SoundInfo(soundName, volume, pitch, broadcast);
     }
 
     public void play(Location location) {
@@ -58,14 +59,18 @@ public final class SoundInfo {
             throw new IllegalArgumentException("World of location cannot be null.");
         }
 
-        world.playSound(location, sound, volume, pitch);
+        world.playSound(location, soundName, volume, pitch);
     }
 
     public void play(Player player, Location location) {
-        player.playSound(location, sound, volume, pitch);
+        player.playSound(location, soundName, volume, pitch);
     }
 
     public boolean isBroadcast() {
         return broadcast;
+    }
+
+    public void stop(Player player) {
+        player.stopSound(soundName);
     }
 }

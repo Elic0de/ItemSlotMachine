@@ -47,6 +47,9 @@ sounds:
   # The list of sounds that will be played when the slot machine is spinning
   spin: ['BLOCK_METAL_PRESSURE_PLATE_CLICK_ON-2-2']
 
+  # プレーヤーがスピン中に再生される音のリスト
+  spinning: ['BLOCK_METAL_PRESSURE_PLATE_CLICK_ON-2-2']
+
   # The list of sounds that will be played when a player wins
   win: ['ENTITY_PLAYER_LEVELUP-2-2']
 
@@ -86,6 +89,13 @@ item-pot:
   # Item format: <item_name>[-<amount>]
   # The item name 'coin' can be used for a coin item
   raise: ['glowstone_dust-2', 'lapis_lazuli-2']
+
+# 一回当たったら一定の確率でもう一度当たる機能
+renchan:
+  # 連チャン機能を有効にするかどうか
+  enabled: false
+  # もう一度あたる確率
+  chance: 2.5
 
 # The list of active item pot combos
 # Each combo has its own section with an unique name
